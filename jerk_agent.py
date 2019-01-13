@@ -16,37 +16,34 @@ EXPLOIT_BIAS = 0.25
 TOTAL_TIMESTEPS = int(1e6)
 
 def main():
-    """Run JERK on the attached environment."""
-    env = retro.make(game='SonicTheHedgehog2-Genesis', record = 'record/.') #grc.RemoteEnv('tmp/sock')
+    """Run JERK """
+    env = retro.make(game='SonicTheHedgehog2-Genesis') #grc.RemoteEnv('tmp/sock') , record = '.'
     env = TrackedEnv(env)
-    #env.render()
+    
     new_ep = True
     solutions = []
     while True:
-        #env.render()
         if new_ep:
-            #env.render()
             if (solutions and
-                    random.random() < EXPLOIT_BIAS + env.total_steps_ever / TOTAL_TIMESTEPS):
+                random.random() < EXPLOIT_BIAS + env.total_steps_ever / TOTAL_TIMESTEPS):
                 solutions = sorted(solutions, key=lambda x: np.mean(x[0]))
                 best_pair = solutions[-1]
                 new_rew = exploit(env, best_pair[1])
                 best_pair[0].append(new_rew)
                 print('replayed best with reward %f' % new_rew)
-                #env.render()
                 continue
             else:
                 env.reset()
                 new_ep = False
         rew, new_ep = move(env, 100)
         print(rew)
-        env.render()
+        #env.render()
         if not new_ep and rew <= 0:
             print('backtracking due to negative reward: %f' % rew)
             _, new_ep = move(env, 70, left=True)
         if new_ep:
             solutions.append(([max(env.reward_history)], env.best_sequence()))
-        #env.render()
+        
 
 def move(env, num_steps, left=False, jump_prob=1.0 / 10.0, jump_repeat=4):
     """
