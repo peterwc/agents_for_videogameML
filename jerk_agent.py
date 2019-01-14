@@ -17,7 +17,7 @@ TOTAL_TIMESTEPS = int(1e6)
 
 def main():
     """Run JERK """
-    env = retro.make(game='SonicTheHedgehog2-Genesis') #grc.RemoteEnv('tmp/sock') , record = '.'
+    env = retro.make(game='SonicTheHedgehog2-Genesis', record = '.') #grc.RemoteEnv('tmp/sock') 
     env = TrackedEnv(env)
     
     new_ep = True
